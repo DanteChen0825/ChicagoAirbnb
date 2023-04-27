@@ -1,0 +1,66 @@
+---
+title: "Airbnb Data Pre-Processing"
+author: "Zhiang Chen"
+date: "2023-04-20"
+output: html_document
+---
+
+```{r}
+# load necessary packages
+library(dplyr)
+library(stringr)
+library(readr)
+```
+
+```{r,warning =FALSE}
+# Import data
+df <- read.csv(file = '/Users/chenzhiang/Desktop/CASA/CSAS0006DSSS/Assessment/Project/data/raw_data_and_processing/Chicago_Airbnb_Listings_Raw.csv')
+# Select relevant column for the model
+df_1 <- select(df, host_since, host_is_superhost, host_listings_count,	host_identity_verified, neighbourhood_cleansed, latitude, longitude, property_type, room_type, accommodates, bathrooms_text, bedrooms, beds, amenities, price, minimum_nights, maximum_nights, availability_30, availability_60, availability_90, availability_365, number_of_reviews,number_of_reviews_ltm, number_of_reviews_l30d, review_scores_rating, review_scores_accuracy, review_scores_cleanliness, review_scores_checkin, review_scores_communication, review_scores_location, review_scores_value, instant_bookable, reviews_per_month)
+
+# Adjust the format of relevant variables
+df_1$host_since <- as.numeric(substring(df_1$host_since,1,4))
+df_1$host_is_superhost <- df_1$host_is_superhost == "t"
+df_1$host_identity_verified <- df_1$host_identity_verified == "t"
+df_1$bathrooms_text <- as.numeric(parse_number(df_1$bathrooms_text))
+df_1$price <- as.numeric(substring(df_1$price,2))
+df_1$instant_bookable <- df_1$instant_bookable == "t"
+
+# Create dummy variables for amenities
+df_1$amenities <- tolower(df_1$amenities)
+
+df_1$self_check_in <- ifelse(grepl("self check-in", df_1$amenities, fixed = TRUE), TRUE, FALSE)
+df_1$dishwasher <- ifelse(grepl("dishwasher", df_1$amenities, fixed = TRUE), TRUE, FALSE)
+df_1$bathtub <- ifelse(grepl("bathtub", df_1$amenities, fixed = TRUE), TRUE, FALSE)
+df_1$heating <- ifelse(grepl("heating", df_1$amenities, fixed = TRUE), TRUE, FALSE)
+df_1$wifi <- ifelse(grepl("wifi", df_1$amenities, fixed = TRUE), TRUE, FALSE)
+df_1$parking <- ifelse(grepl("parking", df_1$amenities, fixed = TRUE), TRUE, FALSE)
+df_1$oven <- ifelse(grepl("oven", df_1$amenities, fixed = TRUE), TRUE, FALSE)
+df_1$stove <- ifelse(grepl("stove", df_1$amenities, fixed = TRUE), TRUE, FALSE)
+df_1$dryer <- ifelse(grepl("dryer", df_1$amenities, fixed = TRUE), TRUE, FALSE)
+df_1$dishwasher <- ifelse(grepl("dishwasher", df_1$amenities, fixed = TRUE), TRUE, FALSE)
+df_1$air_condition <- ifelse(grepl("air condition", df_1$amenities, fixed = TRUE), TRUE, FALSE)
+df_1$outdoor_furniture <- ifelse(grepl("outdoor furniture", df_1$amenities, fixed = TRUE), TRUE, FALSE)
+df_1$shampoo <- ifelse(grepl("shampoo", df_1$amenities, fixed = TRUE), TRUE, FALSE)
+df_1$bbq_grill <- ifelse(grepl("bbq grill", df_1$amenities, fixed = TRUE), TRUE, FALSE)
+df_1$hdtv <- ifelse(grepl("hdtv", df_1$amenities, fixed = TRUE), TRUE, FALSE)
+df_1$netflix <- ifelse(grepl("netflix", df_1$amenities, fixed = TRUE), TRUE, FALSE)
+df_1$microwave <- ifelse(grepl("microwave", df_1$amenities, fixed = TRUE), TRUE, FALSE)
+df_1$free_parking <- ifelse(grepl("free parking", df_1$amenities, fixed = TRUE), TRUE, FALSE)
+df_1$refrigerator <- ifelse(grepl("refrigerator", df_1$amenities, fixed = TRUE), TRUE, FALSE)
+df_1$alarm <- ifelse(grepl("alarm", df_1$amenities, fixed = TRUE), TRUE, FALSE)
+df_1$coffee <- ifelse(grepl("coffee", df_1$amenities, fixed = TRUE), TRUE, FALSE)
+df_1$monoxide <- ifelse(grepl("monoxide", df_1$amenities, fixed = TRUE), TRUE, FALSE)
+df_1$kitchen <- ifelse(grepl("kitchen", df_1$amenities, fixed = TRUE), TRUE, FALSE)
+df_1$silverware <- ifelse(grepl("silverware", df_1$amenities, fixed = TRUE), TRUE, FALSE)
+df_1$first_aid_kit <- ifelse(grepl("first aid kit", df_1$amenities, fixed = TRUE), TRUE, FALSE)
+
+# Prepare output data
+df_2 <- select(df_1, host_since, host_is_superhost, host_listings_count,	host_identity_verified, neighbourhood_cleansed, latitude, longitude, property_type, room_type, accommodates, bathrooms_text, bedrooms, beds,  price, minimum_nights, maximum_nights, availability_30, availability_60, availability_90, availability_365, number_of_reviews,number_of_reviews_ltm, number_of_reviews_l30d, review_scores_rating, review_scores_accuracy, review_scores_cleanliness, review_scores_checkin, review_scores_communication, review_scores_location, review_scores_value, instant_bookable, reviews_per_month, self_check_in, dishwasher, bathtub, heating, wifi, parking, oven, stove, dryer, dishwasher, air_condition, outdoor_furniture, shampoo, bbq_grill, hdtv, netflix, microwave, free_parking, refrigerator, alarm, coffee, monoxide, kitchen, silverware, first_aid_kit)
+
+df_2 <- na.omit(df_2)
+```
+
+```{r}
+write.csv(df_2, '~/Desktop/CASA/CSAS0006DSSS/Assessment/Project/data/airbnb.csv', row.names=FALSE)
+```
